@@ -9,7 +9,7 @@
 #define SERVER_HOSTNAME "localhost"
 #define SERVER_PORT 8000
 #define PORT 8001
-#define MESSAGE_MAXLEN 512
+#define MESSAGE_MAXLEN 1000
 
 void generateValidData(char *message, short int length)
 {
