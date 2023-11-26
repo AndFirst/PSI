@@ -36,10 +36,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     message = prepare_message(args.data_to_send)
-    
+    print("Python client")
     print("Server Address:", args.server_address)
     print("Server Port:", args.server_port)
-    print("Data to Send:", args.data_to_send)
-    print("Encoded data:", message)
+    print("Message length:", len(message))
+    print("Content:", args.data_to_send)
     
     send_data(message, args.server_address, args.server_port)
