@@ -41,7 +41,8 @@ if __name__ == "__main__":
     print("Server Address:", args.server_address)
     print("Server Port:", args.server_port)
 
-    for size in range(0, args.max_data_size + 1):
+    # breaks at 65507
+    for size in range(65470, args.max_data_size + 1, 1):
         data_to_send = generate_valid_data(size)
         message = prepare_message(data_to_send)
         print("Message length:", len(message))

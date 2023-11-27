@@ -1,7 +1,7 @@
 import socket
 import argparse
 
-SIZE = 1024
+SIZE = 65535
 
 
 def is_data_correct(data):
@@ -32,11 +32,11 @@ def is_data_correct(data):
 
 def log_message_recived(message, address):
     length = message[0] * 256 + message[1]
-    message_content = message[2:]
+    # message_content = message[2:]
     print('-------------------------------------')
     print(f'Received message from: {address[0]}')
     print(f'Message length: {length}')
-    print(f'Message: {message_content.decode()}')
+    # print(f'Message: {message_content.decode()}')
     print('-------------------------------------')
 
 
@@ -54,8 +54,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Script description')
     parser.add_argument('--server_address', type=str, default='127.0.0.1', help='Server address')
     parser.add_argument('--server_port', type=int, default=8000, help='Server port')
-    
+
     args = parser.parse_args()
 
     serve(args.server_address, args.server_port)
-    
+
