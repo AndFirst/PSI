@@ -8,7 +8,7 @@ def send_data(message, server_address, server_port):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
         client_socket.sendto(message, (server_address, server_port))
         response, _ = client_socket.recvfrom(SIZE)
-        print(f"Received response: {response}")
+        print(f"Received response: {response.decode()}")
 
 def generate_valid_data(length):
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'

@@ -6,17 +6,14 @@ BUILD_DIR=../build
 
 LIBS=-lm
 
-_DEPS = server.h
+_DEPS = sockets.h
 DEPS = $(patsubst %,$(INCLUDE_DIR)/%,$(_DEPS))
 
-_OBJ = server.o make_socket.o
+_OBJ = server.o sockets.o
 OBJ = $(patsubst %,$(OBJECT_DIR)/%,$(_OBJ))
 
-_CLIENT_OBJ = client.o make_socket.o
+_CLIENT_OBJ = client.o sockets.o
 CLIENT_OBJ = $(patsubst %,$(OBJECT_DIR)/%,$(_CLIENT_OBJ))
-
-# _CLIENT2_OBJ = client_1_2.o make_socket.o
-# CLIENT2_OBJ = $(patsubst %,$(OBJECT_DIR)/%,$(_CLIENT2_OBJ))
 
 $(OBJECT_DIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -26,9 +23,6 @@ server: $(OBJ)
 
 client: $(CLIENT_OBJ)
 	$(CC) -o $(BUILD_DIR)/$@ $^ $(CFLAGS) $(LIBS)
-
-# client_1_2: $(CLIENT2_OBJ)
-# 	$(CC) -o $(BUILD_DIR)/$@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 

@@ -43,7 +43,7 @@ def serve(server_address, server_port):
             while True:
                     data, client_address = server_socket.recvfrom(SIZE)
                     log_message_recived(data, client_address)
-                    response = 'Data correct.' if is_data_correct(data) else 'Invalid data.'
+                    response = 'Data correct\0' if is_data_correct(data) else 'Invalid data\0'
                     server_socket.sendto(response.encode(), client_address)
 
 

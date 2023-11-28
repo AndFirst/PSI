@@ -1,27 +1,29 @@
-#include <arpa/inet.h>
-#include <limits.h>
-#include <server.h>
+#include "sockets.h"
+#include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
-#define MESSAGE_LEN 1000
 #define MAX_IP_LENGTH 17
 #define PORT 8000
+#define MESSAGE_LEN 1000
 
-void getHostIP(char *hostname, struct sockaddr_in *address)
+void obtainHostIP(char *hostname, struct sockaddr_in *address)
 {
     strcpy(hostname, inet_ntoa(address->sin_addr));
 }
 
-void logMessageReceived(char *message, struct sockaddr_in *address)
+void recordReceivedMessage(char *message, struct sockaddr_in *address)
 {
     char hostIP[MAX_IP_LENGTH];
     unsigned short length = message[0] << 8;
     length += message[1];
-    getHostIP(hostIP, address);
+    obtainHostIP(hostIP, address);
     printf("-------------------------------------\n");
     printf("Received message from: %s\n", hostIP);
     printf("Message length: %d\n", length);
@@ -29,8 +31,8 @@ void logMessageReceived(char *message, struct sockaddr_in *address)
     printf("-------------------------------------\n");
 }
 
-void sendResponse(int socketFD, struct sockaddr *addr,
-                  size_t addressSize, char *message)
+void dispatchResponse(int socketFD, struct sockaddr *addr,
+                      size_t addressSize, char *message)
 {
     int bytesReceived;
     size_t messageLen = strlen(message) + 1;
@@ -38,15 +40,15 @@ void sendResponse(int socketFD, struct sockaddr *addr,
                            0, addr, addressSize);
 }
 
-void handleRecvError()
+void processRecvError()
 {
     perror("recvfrom (server)");
     exit(EXIT_FAILURE);
 }
 
-int isDataCorrect(char *message, int size)
+int verifyDataCorrectness(char *message, int size)
 {
-    printf("Data correct status: ");
+    printf("Data correctness status: ");
     if (size < 3)
     {
         printf("too short\n");
@@ -89,7 +91,7 @@ int isDataCorrect(char *message, int size)
     return 1;
 }
 
-void receiveLoop(int socketFD)
+void conductReception(int socketFD)
 {
     int shouldStop = 0;
     struct sockaddr_in clientAddress;
@@ -104,9 +106,9 @@ void receiveLoop(int socketFD)
             recvfrom(socketFD, message, MESSAGE_LEN, 0,
                      (struct sockaddr *)&clientAddress, &clientAddressSize);
         if (bytesReceived < 0)
-            handleRecvError();
-        logMessageReceived(message, &clientAddress);
-        if (isDataCorrect(message, bytesReceived))
+            processRecvError();
+        recordReceivedMessage(message, &clientAddress);
+        if (verifyDataCorrectness(message, bytesReceived))
         {
             response = "Data correct\0";
         }
@@ -114,19 +116,18 @@ void receiveLoop(int socketFD)
         {
             response = "Invalid data\0";
         }
-        sendResponse(socketFD, (struct sockaddr *)&clientAddress,
-                     clientAddressSize, response);
+        dispatchResponse(socketFD, (struct sockaddr *)&clientAddress,
+                         clientAddressSize, response);
     }
 }
 
 int main()
 {
-
     int socketFD;
 
-    socketFD = makeDatagramSocket(PORT);
+    socketFD = createDatagramSocket(PORT);
 
-    receiveLoop(socketFD);
+    conductReception(socketFD);
 
     close(socketFD);
     return 0;
