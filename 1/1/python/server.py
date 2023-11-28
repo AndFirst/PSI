@@ -30,10 +30,11 @@ def is_data_correct(data):
     
 def log_message_recived(message, address):
     length = message[0] * 256 + message[1]
+    message_content = message[2:]
     print('-------------------------------------')
     print(f'Received message from: {address[0]}')
     print(f'Message length: {length}')
-    print(f'Message: {message.decode()[2:]}')
+    print(f'Message: {message_content.decode()}')
     print('-------------------------------------')
        
 def serve(server_address, server_port):
