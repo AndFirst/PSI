@@ -1,5 +1,6 @@
 import socket
 import argparse 
+import random
 
 SIZE = 1000
 
@@ -42,6 +43,9 @@ def serve(server_address, server_port):
             while True:
                     data, client_address = server_socket.recvfrom(SIZE)
                     log_message_recived(data, client_address)
+                    # if random.uniform(0, 1) < 0.2:
+                    #     print("Simulating packet loss. Retransmitting...")
+                    #     continue 
                     response = 'Data correct.' if is_data_correct(data) else 'Invalid data.'
                     server_socket.sendto(response.encode(), client_address)
 
