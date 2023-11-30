@@ -31,7 +31,7 @@ def prepare_message(data):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Script description')
 
-    parser.add_argument('--server_address', type=str, default='127.0.0.1', help='Server address')
+    parser.add_argument('--server_address', type=str, default='z35_python_server_1_2', help='Server address')
     parser.add_argument('--server_port', type=int, default=8000, help='Server port')
     parser.add_argument('--max_data_size', type=int, default=1000, help='Maximum data size to send')
 
