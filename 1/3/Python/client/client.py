@@ -4,12 +4,26 @@ import argparse
 from time import sleep
 
 SIZE = 1000
+MAX_RETRANSMISSIONS = 10
+TIMEOUT = 2
 
 def send_data(message, server_address, server_port):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
-        client_socket.sendto(message, (server_address, server_port))
-        response, _ = client_socket.recvfrom(SIZE)
-        print(f"Received response: {response}")
+        attempts = 0
+        while attempts < MAX_RETRANSMISSIONS:
+            client_socket.sendto(message, (server_address, server_port))
+            client_socket.settimeout(TIMEOUT)
+            try:
+                response, _ = client_socket.recvfrom(SIZE)
+                print(f"Received response: {response}")
+                break 
+            except socket.timeout:
+                print("Timeout. Retransmitting...")
+                attempts += 1
+                continue 
+
+        if attempts == MAX_RETRANSMISSIONS:
+            print("Max retransmission attempts reached. Giving up.")
 
 def generate_valid_data(length):
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -43,6 +57,4 @@ if __name__ == "__main__":
     print("Message length:", len(message))
     print("Content:", args.data_to_send)
     
-    for i in range(10):
-        send_data(message, args.server_address, args.server_port)
-        sleep(1)
+    send_data(message, args.server_address, args.server_port)

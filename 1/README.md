@@ -21,3 +21,8 @@
     cd build
     ./client
     ./server
+
+# 1.2
+
+Jak widać, podczas wysłania pakietu o rozmiarze 65508 wystąpił błąd. Przyczyną jest ograniczenie protokołu UDP, który pozwala na wysłanie pakietów o długości do 65507 bajtów włącznie.
+16 bitowe pole Total Length w protokole IPv4 określa rozmiar pakietu w bajtach, z których 8 bajtów zajmuje nagłówek UDP i 20 bajtów nagłówek IPv4, w wyniku mamy 65535 – (20+8) = 65507 bajty przeznaczone na dane.
