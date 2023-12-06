@@ -10,10 +10,6 @@ def is_data_correct(data):
         print('too short')
         return False
 
-    if not data[-1] == 0:
-        print('no zero')
-        return False
-
     data_length = int.from_bytes(data[:4], byteorder='big')
 
     if not len(data) == data_length:
@@ -27,13 +23,12 @@ def log_message_received(message, address):
     message_length = int.from_bytes(message[:4], byteorder='big')
     message_content = message[4:]
 
-    linked_list = LinkedList()
-    linked_list.from_json(message_content)
+    linked_list = LinkedList.from_bytes(message_content)
 
     print('-------------------------------------')
     print(f'Received message from: {address[0]}')
     print(f'Message length: {message_length}')
-    print(f'Message: {message_content.decode()}\n')
+    print(f'Message: {message_content}\n')
     print("Received List:\n")
     linked_list.display()
     print('-------------------------------------')

@@ -15,10 +15,10 @@ def send_data(message, server_address, server_port):
 
 def generate_valid_data():
     linked_list = LinkedList()
-    data1 = MyData(123, "Sample String 1", "FixedString1")
-    data2 = MyData(456, "Another Sample String", "FixedString2")
-    data3 = MyData(321, "3rd sample string", "FixedString4")
-    data4 = MyData(654, "And yet another Sample String", "FixedString511")
+    data1 = MyData(123, "FixedString1-123", "Sample String 1")
+    data2 = MyData(456, "FixedString2-456", "Another Sample String")
+    data3 = MyData(321, "FixedString3-321", "3rd sample string")
+    data4 = MyData(654, "FixedString4-654", "And yet another Sample String")
     linked_list.append(data1)
     linked_list.append(data2)
     linked_list.append(data3)
@@ -28,7 +28,7 @@ def generate_valid_data():
 
 def prepare_message(data):
     data_length = len(data) + 4
-    message = data_length.to_bytes(4, byteorder='big') + data.encode()    
+    message = data_length.to_bytes(4, byteorder='big') + data
     return message
 
 
@@ -41,11 +41,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     linked_list = generate_valid_data()
-    data_to_send = linked_list.to_json()
+    data_to_send = linked_list.to_bytes()
 
     print("Generated List:\n")
     linked_list.display()
-    print("")
+    print('-------------------------------------')
 
     message = prepare_message(data_to_send)
     print("Python client")
