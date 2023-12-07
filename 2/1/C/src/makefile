@@ -16,7 +16,7 @@ _CLIENT_OBJ = client.o sockets.o linked_list.o
 CLIENT_OBJ = $(patsubst %,$(OBJECT_DIR)/%,$(_CLIENT_OBJ))
 
 $(OBJECT_DIR)/%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -g -c -o $@ $< $(CFLAGS)
 
 server: $(OBJ)
 	$(CC) -o $(BUILD_DIR)/$@ $^ $(CFLAGS) $(LIBS)
@@ -27,4 +27,4 @@ client: $(CLIENT_OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(OBJECT_DIR)/*.o *~ core $(INCLUDE_DIR)/*~
+	rm -f $(OBJECT_DIR)/*.o *~ core $(INCLUDE_DIR)/*~ $(BUILD_DIR)/*

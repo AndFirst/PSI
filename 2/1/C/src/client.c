@@ -100,6 +100,7 @@ int main() {
 
     // Clean up
     free(buffer);
+    free(packed_data);
     free_linked_list(&ll);
     close(clientSocketFD);
 

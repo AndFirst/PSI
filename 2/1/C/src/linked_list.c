@@ -103,7 +103,7 @@ void free_linked_list(struct LinkedList *ll) {
     while (current != NULL) {
         struct Node *temp = current;
         current = current->next;
-        free(temp->data.variable_string);
+        temp->data.variable_string = NULL;
         free(temp);
     }
     ll->head = NULL;
