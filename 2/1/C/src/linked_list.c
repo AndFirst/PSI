@@ -42,14 +42,15 @@ struct MyData *unpack_data(char *packed_data) {
         fprintf(stderr, "Memory allocation error.\n");
         exit(EXIT_FAILURE);
     }
-
     memcpy(&(unpacked_data->int_value), packed_data, sizeof(int32_t));
+    unpacked_data->int_value = swapEndianness(unpacked_data->int_value);
+
     memcpy(unpacked_data->fixed_string, packed_data + sizeof(int32_t), FIXED_STRING_LENGTH);
     unpacked_data->fixed_string[FIXED_STRING_LENGTH] = '\0';
 
     int32_t variable_string_length;
     memcpy(&variable_string_length, packed_data + sizeof(int32_t) + FIXED_STRING_LENGTH, sizeof(int32_t));
-
+    variable_string_length = swapEndianness(variable_string_length);
     unpacked_data->variable_string = (char *)malloc(variable_string_length + 1);
     if (unpacked_data->variable_string == NULL) {
         fprintf(stderr, "Memory allocation error.\n");
