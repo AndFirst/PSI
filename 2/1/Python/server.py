@@ -6,10 +6,6 @@ SIZE = 1000
 
 
 def is_data_correct(data):
-    if not len(data) >= 4:
-        print('too short')
-        return False
-
     data_length = int.from_bytes(data[:4], byteorder='big')
 
     if not len(data) == data_length:
