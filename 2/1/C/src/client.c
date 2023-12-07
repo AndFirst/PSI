@@ -49,7 +49,8 @@ int main() {
     }
 
     // Copy the packed size into the buffer
-    memcpy(buffer, &packed_size, sizeof(int));
+    int32_t value = swapEndianness(packed_size + 4);
+    memcpy(buffer, &value, sizeof(int));
 
     // Copy the packed data into the buffer
     memcpy(buffer + sizeof(int), packed_data, packed_size);
