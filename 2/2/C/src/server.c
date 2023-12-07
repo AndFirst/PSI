@@ -52,8 +52,9 @@ int verifyDataCorrectness(char *message, int size)
 
     int data_length;
     memcpy(&data_length, message, sizeof(int));
-
-    if (size != data_length + sizeof(int))
+    data_length = swapEndianness(data_length);
+    printf("size: %d data_len: %d\n", size, data_length);
+    if (size != data_length)
     {
         printf("not correct length\n");
         return 0;
