@@ -6,13 +6,13 @@ BUILD_DIR=../build
 
 LIBS=-lm
 
-_DEPS = sockets.h
+_DEPS = sockets.h linked_list.h
 DEPS = $(patsubst %,$(INCLUDE_DIR)/%,$(_DEPS))
 
-_OBJ = server.o sockets.o
+_OBJ = server.o sockets.o linked_list.o
 OBJ = $(patsubst %,$(OBJECT_DIR)/%,$(_OBJ))
 
-_CLIENT_OBJ = client.o sockets.o
+_CLIENT_OBJ = client.o sockets.o linked_list.o
 CLIENT_OBJ = $(patsubst %,$(OBJECT_DIR)/%,$(_CLIENT_OBJ))
 
 $(OBJECT_DIR)/%.o: %.c $(DEPS)

@@ -1,6 +1,6 @@
 import socket
 import argparse
-from data import LinkedList, MyData
+from linked_list import LinkedList, MyData
 
 SIZE = 1000
 
