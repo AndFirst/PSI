@@ -37,9 +37,21 @@ def serve(server_address, server_port):
         while True:
             client_socket, client_address = server_socket.accept()
             
+            bytes_to_recive = 0
             received_data = b''  # Accumulator for received data
-
             while True:
+                data_chunk = client_socket.recv(SIZE)    
+                received_data += data_chunk
+
+                if len(received_data) >= 4:
+                    bytes_to_recive = int.from_bytes(received_data[:4], byteorder='big') - 4
+                    received_data = received_data[4:]
+                    break
+            print("Structure will have length of:", bytes_to_recive)
+
+            len_bytes_received = len(received_data)
+
+            while len_bytes_received < bytes_to_recive:
                 data_chunk = client_socket.recv(SIZE)
                 if not data_chunk:
                     break  # No more data, exit the loop
@@ -49,30 +61,17 @@ def serve(server_address, server_port):
                 while True:
                     start = 0
                     str_len = int.from_bytes(received_data[20:24], byteorder='big')
-                    # print(start, str_len)
                     node = received_data[start: 24 + str_len]
-                    # print(len(node))
                     if len(node) == 24 + str_len:
-                        # print("full_node")
+                        len_bytes_received += 24+ str_len
                         received_data = received_data[24+str_len:]
                         data = MyData.unpack(node)
-                        print(datetime.datetime.now())
-                        print(data)
+                        print(datetime.datetime.now(), data)
                     if len(node) < 24 + str_len:
                         break
-
-                # Check if the complete message has been received
-                # if len(received_data) >= 4:
-                #     message_length = int.from_bytes(received_data[:4], byteorder='big')
-                #     if len(received_data) >= message_length:
-                #         break  # Complete message received, exit the loop
-            
-            # log_message_received(received_data, client_address)
-
-            # response = 'Data correct\0' if is_data_correct(received_data) else 'Invalid data\0'
-            # client_socket.sendall(response.encode())
-            
-            # client_socket.close()
+            response = 'Received full data\0'
+            client_socket.sendall(response.encode())
+            client_socket.close()
 
 
 
