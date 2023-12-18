@@ -1,0 +1,15 @@
+version: "3.0"
+services:
+  z35_python_server_2_1:
+    container_name: z35_python_server_2_1
+    build: ./server
+    tty: true
+    cap_add:
+    - NET_ADMIN
+  z35_python_client_2_1:
+    container_name: z35_python_client_2_1
+    build: ./client
+    tty: true
+    cap_add:
+    - NET_ADMIN
+
