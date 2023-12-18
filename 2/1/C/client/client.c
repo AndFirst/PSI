@@ -11,7 +11,7 @@
 
 #define CLIENT_HOSTNAME "z35_c_client_2_1"
 #define CLIENT_PORT 8001
-#define SERVER_HOSTNAME "z35_c_server_2_1"
+#define SERVER_HOSTNAME "z35_python_server_2_1"
 #define SERVER_PORT 8000
 #define MESSAGE_SIZE 1000
 
