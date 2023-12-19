@@ -35,7 +35,7 @@ def prepare_message(data):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Script description')
 
-    parser.add_argument('--server_address', type=str, default='::1', help='Server address (IPv6)')
+    parser.add_argument('--server_address', type=str, default='z35_c_server_2_2', help='Server address (IPv6)')
     parser.add_argument('--server_port', type=int, default=8000, help='Server port')
 
     args = parser.parse_args()

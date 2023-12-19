@@ -9,9 +9,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#define CLIENT_HOSTNAME "::1"  // IPv6 loopback address
+#define CLIENT_HOSTNAME "z35_c_client_2_2"  // IPv6 loopback address
 #define CLIENT_PORT 8001
-#define SERVER_HOSTNAME "::1"  // IPv6 loopback address
+#define SERVER_HOSTNAME "z35_python_server_2_2"  // IPv6 loopback address
 #define SERVER_PORT 8000
 #define MESSAGE_SIZE 1000
 
