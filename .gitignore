@@ -8,6 +8,7 @@
 2/3b/C/obj
 2/3b/C/build
 static/
+*
 
 __pycache__/
 *.py[cod]
