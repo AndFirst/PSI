@@ -2,11 +2,15 @@
 <html>
 <head>
     <title>Video Streaming Client</title>
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/styles.css?v=1.1">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <video id="video-player" autoplay controls></video>
-    <script src="scripts/main.js?v=1.3"></script>
+    <div class="container">
+        <input type="text" id="video-name" placeholder="Enter video name (e.g., video2)">
+        <button onclick="loadVideo()">Load Video</button>
+        <video id="video-player" autoplay controls></video>
+    </div>
+    <script src="scripts/main.js?v=1.4"></script>
 </body>
 </html>
