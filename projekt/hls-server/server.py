@@ -8,6 +8,8 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+app.static_folder = 'static'
+
 
 def should_generate_hls(mp4_path, m3u8_path):
     if not os.path.exists(m3u8_path):
