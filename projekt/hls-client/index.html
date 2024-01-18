@@ -4,6 +4,17 @@
     <title>Video Streaming Client</title>
     <link rel="stylesheet" href="styles/styles.css?v=1.1">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+              console.error('Service Worker registration failed:', error);
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -11,6 +22,6 @@
         <button onclick="loadVideo()">Load Video</button>
         <video id="video-player" autoplay controls></video>
     </div>
-    <script src="scripts/main.js?v=1.5"></script>
+    <script src="scripts/main.js?v=1.4"></script>
 </body>
 </html>
