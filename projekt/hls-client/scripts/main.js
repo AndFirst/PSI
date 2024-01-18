@@ -15,7 +15,7 @@ function loadVideo() {
   const videoName = videoNameInput.value.trim();
 
   if (videoName) {
-    const videoUrl = `/${videoName}.m3u8`;
+    const videoUrl = `${videoName}/hls.m3u8`;
     loadSource(videoUrl);
   } else {
       console.error('Please enter a valid video name');
@@ -24,6 +24,6 @@ function loadVideo() {
 
 document.addEventListener('DOMContentLoaded', function() {
   const defaultVideoName = 'video';
-  const defaultVideoUrl = `/${defaultVideoName}.m3u8`;
+  const defaultVideoUrl = `${defaultVideoName}/hls.m3u8`;
   loadSource(defaultVideoUrl);
 });

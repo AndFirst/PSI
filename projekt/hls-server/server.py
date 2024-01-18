@@ -8,8 +8,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-app.static_folder = 'static'
-
 
 def should_generate_hls(mp4_path, m3u8_path):
     if not os.path.exists(m3u8_path):
@@ -21,11 +19,11 @@ def should_generate_hls(mp4_path, m3u8_path):
     return mp4_mtime > m3u8_mtime
 
 
-@app.route('/<path:filename>.m3u8')
-def hls_playlist(filename):
-    hls_directory = 'static'
-    mp4_path = f'media/{filename}.mp4'
-    m3u8_path = f'{hls_directory}/{filename}.m3u8'
+@app.route('/<path:videoname>/hls.m3u8')
+def hls_playlist(videoname):
+    hls_directory = f'static/{videoname}'
+    mp4_path = f'media/{videoname}.mp4'
+    m3u8_path = f'{hls_directory}/hls.m3u8'
 
     os.makedirs(hls_directory, exist_ok=True)
 
@@ -38,12 +36,12 @@ def hls_playlist(filename):
             '-f', 'hls', m3u8_path
         ])
 
-    return send_from_directory('static', f'{filename}.m3u8')
+    return send_from_directory(f'static/{videoname}', 'hls.m3u8')
 
 
-@app.route('/<path:filename>')
-def hls_stream(filename):
-    return send_from_directory('static', filename)
+@app.route('/<path:videoname>/<path:filename>')
+def hls_stream(videoname, filename):
+    return send_from_directory(f'static/{videoname}', filename)
 
 
 if __name__ == '__main__':

@@ -29,10 +29,5 @@ self.addEventListener('fetch', event => {
   
   function modifyUrl(originalUrl) {
     const serverUrl = getNextServerUrl();
-
-    const urlWithoutProtocol = originalUrl.replace(/^https?:\/\//, '');
-    const parts = urlWithoutProtocol.split('/');
-    parts[0] = serverUrl;
-
-    return parts.join('/');
+    return originalUrl.replace(/^(https?:\/\/[^\/]+)(\/.*)?$/, serverUrl + '$2');
   }
