@@ -3,6 +3,7 @@ from flask_cors import CORS
 import subprocess
 import argparse
 import os
+import hashlib
 
 
 app = Flask(__name__)
@@ -73,4 +74,6 @@ if __name__ == '__main__':
     for videoname in videonames:
         generate_hls(videoname, qualities)
 
+    app.config['videonames'] = videonames
+    app.config['qualities'] = qualities
     app.run(debug=True, port=args.port)

@@ -8,7 +8,7 @@ function loadSource(videoUrl) {
     hls.loadSource(videoUrl);
     hls.attachMedia(videoPlayer);
   } else {
-      console.error('HLS is not supported');
+    window.alert('HLS is not supported');
   }
 }
 
@@ -20,7 +20,7 @@ function loadVideo() {
     const videoUrl = `${videoName}/${videoQuality}/hls.m3u8`;
     loadSource(videoUrl);
   } else {
-      console.error('Please enter a valid video name');
+      window.alert('Please enter a valid video name');
   }
 }
 
