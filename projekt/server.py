@@ -1,10 +1,14 @@
 import argparse
-import socket
-import json
+from re import T
 import logging
 from typing import Dict
-
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 from data_structures import VideoDescriptor, AvaliabilityResponse
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s [SERVER] %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
 
 class Server:
@@ -15,76 +19,39 @@ class Server:
 
         self._movies_location: Dict[VideoDescriptor, str] = {}
 
-        # Create a logger with a custom format
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s [SERVER %(server_id)s] %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S')
-        self.logger = logging.getLogger(__name__)
-        self.logger = logging.LoggerAdapter(
-            self.logger, {'server_id': self._server_id})
         self.init_params()
+
+        app = Flask(__name__)
+        CORS(app)
+
+        @app.route('/', methods=['POST'])
+        def get_file_location():
+            try:
+                data = request.get_json()
+                received_descriptor = VideoDescriptor(**data)
+                logging.info(
+                    f'Received descriptior: {received_descriptor}')
+                if received_descriptor in self._movies_location:
+                    video_location = self._movies_location[received_descriptor]
+                    logging.info(
+                        f"VideoDescriptor found in the coordinator's database. Location: {video_location}")
+
+                    # Send a response to the coordinator indicating file presence
+                    response_data = {"avaliable": True,
+                                     "location": video_location}
+                    response = AvaliabilityResponse(**response_data)
+                    logging.info(f'Response: {jsonify(response)}')
+                    return jsonify(response)
+
+            except Exception as e:
+                logging.warning(str(e))
+                return jsonify({'error': str(e)}), 400
+
+        self.app = app
 
     def init_params(self):
         self._movies_location.update(
             {VideoDescriptor("chuj", 123): "sample.mp4"})
-
-    def run(self, host: str, port: int) -> None:
-        # Create a TCP/IP socket
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-            # Bind the socket to a specific address and port
-            server_address = (host, port)
-            server_socket.bind(server_address)
-
-            # Listen for incoming connections
-            server_socket.listen(1)
-            self.logger.info(f"Listening on {host}:{port}")
-            try:
-                while True:
-                    # Wait for a connection
-                    self.logger.info("Waiting for a connection...")
-                    client_socket, client_address = server_socket.accept()
-                    self.logger.info(
-                        f"Accepted connection from {client_address}")
-
-                    # Handle the client connection
-                    self.handle_client(client_socket)
-
-            except KeyboardInterrupt:
-                self.logger.info("Shutting down.")
-
-    def handle_client(self, client_socket: socket.socket):
-        # Receive data from the coordinator
-        data = client_socket.recv(1024)
-        if not data:
-            return
-
-        # Deserialize the received data (assuming it's in JSON format)
-        video_descriptor_data = json.loads(data.decode('utf-8'))
-
-        # Display the received VideoDescriptor
-        self.logger.info(f"Received VideoDescriptor: {video_descriptor_data}")
-
-        # Check if the received video descriptor is in self._movies_location
-        received_descriptor = VideoDescriptor(**video_descriptor_data)
-        if received_descriptor in self._movies_location:
-            video_location = self._movies_location[received_descriptor]
-            self.logger.info(
-                f"VideoDescriptor found in the coordinator's database. Location: {video_location}")
-
-            # Send a response to the coordinator indicating file presence
-            response_data = {"avaliable": True, "location": video_location}
-            response = AvaliabilityResponse(**response_data)
-            response_message = json.dumps(response.__dict__)
-            client_socket.sendall(response_message.encode('utf-8'))
-        else:
-            self.logger.warning(
-                "VideoDescriptor not found in the coordinator's database.")
-
-            # Send a response to the coordinator indicating file absence
-            response_data = {"avaliable": False, "location": None}
-            response = AvaliabilityResponse(**response_data)
-            response_message = json.dumps(response.__dict__)
-            client_socket.sendall(response_message.encode('utf-8'))
 
 
 def parse_arguments():
@@ -112,4 +79,4 @@ if __name__ == '__main__':
     server_id = args.server_id
 
     server = Server(coordinator_host, coordinator_port, server_id)
-    server.run(server_host, server_port)
+    server.app.run(server_host, server_port, debug=True)

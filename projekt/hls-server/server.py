@@ -45,8 +45,10 @@ def hls_stream(videoname, filename):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run the Flask app with an optional port argument.')
-    parser.add_argument('--port', type=int, default=5000, help='Port number for the server (default: 5000)')
+    parser = argparse.ArgumentParser(
+        description='Run the Flask app with an optional port argument.')
+    parser.add_argument('--port', type=int, default=5000,
+                        help='Port number for the server (default: 5000)')
     args = parser.parse_args()
 
     app.run(debug=True, port=args.port)
