@@ -26,7 +26,7 @@ def generate_hls(videoname, qualities):
     for quality in qualities:
         width = quality * 16.0 / 9.0
         height = quality
-        quality_dir = f"{hls_directory}/{height}p"
+        quality_dir = f"{hls_directory}/{quality}p"
         quality_m3u8 = f"{quality_dir}/hls.m3u8"
 
         os.makedirs(quality_dir, exist_ok=True)
@@ -42,7 +42,7 @@ def generate_hls(videoname, qualities):
                 '-b:a', f'{audio_bitrate}k',
                 '-c:v', 'h264',
                 '-b:v', f'{video_bitrate}k',
-                '-hls_time', '4',
+                '-hls_time', '6',
                 '-hls_playlist_type', 'vod',
                 '-hls_list_size', '0',
                 '-hls_segment_filename', f"{quality_dir}/hls-%03d.ts",
@@ -52,7 +52,6 @@ def generate_hls(videoname, qualities):
 
 @app.route('/<string:videoname>/<string:quality>/hls.m3u8')
 def hls_playlist(videoname, quality):
-    generate_hls(videoname, qualities=[144, 360, 720, 1080])
     return send_from_directory(f'static/{videoname}/{quality}', 'hls.m3u8')
 
 
@@ -64,6 +63,14 @@ def hls_stream(videoname, quality, filename):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the Flask app with an optional port argument.')
     parser.add_argument('--port', type=int, default=5000, help='Port number for the server (default: 5000)')
+    parser.add_argument('--videonames', nargs='+', type=str, default=['video', 'video2'], help='List of input video names (without extension)')
+    parser.add_argument('--qualities', nargs='+', type=int, default=[144, 240, 360, 720], help='List of supported qualities')
     args = parser.parse_args()
+
+    videonames = args.videonames
+    qualities = args.qualities
+
+    for videoname in videonames:
+        generate_hls(videoname, qualities)
 
     app.run(debug=True, port=args.port)
