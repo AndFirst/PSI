@@ -4,6 +4,7 @@ import json
 import socket
 import logging
 from datetime import datetime
+import requests
 
 
 class Client:
@@ -24,36 +25,25 @@ class Client:
         video_key: VideoKey = VideoKey(video_name, video_quality)
         serialized_data: str = json.dumps(video_key.__dict__)
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-            coordinator_address = (
-                self._coordinator_host, self._coordinator_port)
+        # Send request to /servers/ endpoint
+        self.send_request(serialized_data)
 
-            # Connect to the coordinator
-            client_socket.connect(coordinator_address)
+    def send_request(self, data: str) -> None:
+        url = f"http://{self._coordinator_host}:{self._coordinator_port}/servers/"
+        headers = {'Content-Type': 'application/json'}
 
-            self.logger.info(
-                f"Connected to the coordinator at {coordinator_address}")
+        try:
+            response = requests.post(url, data=data, headers=headers)
 
-            # Send the serialized data to the coordinator
-            client_socket.sendall(serialized_data.encode('utf-8'))
+            if response.status_code == 200:
+                self.logger.info("Request successfully sent to /servers/")
+                self.logger.info(response.json())
+            else:
+                self.logger.error(
+                    f"Failed to send request. Status code: {response.status_code}")
 
-            server_list_data = client_socket.recv(1024)
-            if not server_list_data:
-                self.logger.warning(
-                    "No server list received from the coordinator.")
-                return
-
-            # Deserialize the received server list
-            server_list = [ServerInfo(**server_data)
-                           for server_data in json.loads(server_list_data.decode('utf-8'))]
-
-            # Display the received server list using logger
-            self.logger.info("Received server list:")
-            for server in server_list:
-                self.logger.info(f"Server {server.address}:{server.port}")
-
-            # Close the client socket
-            client_socket.close()
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Request failed with error: {e}")
 
 
 def parse_arguments():
@@ -61,7 +51,7 @@ def parse_arguments():
         description="Your script description here.")
     parser.add_argument("--coordinator_host", default="127.0.0.1",
                         help="The host address to connect the coordinator.")
-    parser.add_argument("--coordinator_port", type=int, default=12345,
+    parser.add_argument("--coordinator_port", type=int, default=5000,
                         help="The port number to connect the coordinator.")
     parser.add_argument('--video_name', type=str, default='sample.mp4',
                         help="The name of video you want to see.")

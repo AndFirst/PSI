@@ -2,10 +2,10 @@
 
 # Specify coordinator host and port
 coordinator_host="127.0.0.1"
-coordinator_port=12345
+coordinator_port=5000
 
 # Specify server ports and ids
-server_ports=(12346 12347 12348)
+server_ports=(5001 5002 5003)
 server_ids=(1 2 3)
 
 # Function to terminate processes using a specified port
