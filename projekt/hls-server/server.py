@@ -33,7 +33,7 @@ class Server:
         app = Flask(__name__)
         CORS(app)
 
-        @app.route('/chujwdupie/', methods=['POST'])
+        @app.route('/availability/', methods=['POST'])
         def get_file_location():
             try:
                 data = request.get_json()
@@ -87,7 +87,6 @@ def should_generate_hls(mp4_path, m3u8_path):
 
 def generate_hls(videoname, qualities):
     file_dir = os.path.dirname(os.path.abspath(__file__))
-    print(file_dir)
     hls_directory = f'{file_dir}/static/{videoname}'
     mp4_path = f'{file_dir}/media/{videoname}.mp4'
 

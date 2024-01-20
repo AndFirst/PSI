@@ -2,10 +2,10 @@
 
 # Specify coordinator host and port
 coordinator_host="127.0.0.1"
-coordinator_port=4999
+coordinator_port=5000
 
 # Specify server ports and ids
-server_ports=(5000 5001)
+server_ports=(5001 5002)
 server_ids=(1 2)
 
 # Function to terminate processes using a specified port
@@ -20,14 +20,17 @@ terminate_process_by_port() {
     fi
 }
 
+pid=$(lsof -t -i :$coordinator_port)
+kill -9 $pid 
+echo "Terminating process using port $coordinator_port (PID: $pid)"
 # Terminate processes using coordinator and server ports
-terminate_process_by_port $coordinator_port
+# terminate_process_by_port $coordinator_port
 for port in "${server_ports[@]}"; do
     terminate_process_by_port $port
 done
 
 # Launch the coordinator
-# python coordinator.py --host $coordinator_host --port 2137 &
+python coordinator.py --coordinator_host $coordinator_host --coordinator_port $coordinator_port &
 
 # Wait for a short time to ensure the coordinator is running before launching servers
 sleep 2

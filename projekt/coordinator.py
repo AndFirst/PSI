@@ -29,31 +29,52 @@ class Coordinator:
             try:
                 data = request.get_json()
                 logging.info(data)
-                video_key = VideoKey(**data)
-                video_descriptor = self._movies.get(video_key)
-                serialized_data = json.dumps(video_descriptor.__dict__)
+
+                video_key, video_descriptor = self.extract_video_info(data)
+
                 if video_descriptor is None:
                     return jsonify({'error': 'File not found.'}), 404
 
-                avaliable_servers = []
-                for server in self._servers:
-                    url = f"http://{server.address}:{server.port}/"
-                    headers = {'Content-Type': 'application/json'}
-                    response = requests.post(
-                        url, data=serialized_data, headers=headers)
-                    response = AvaliabilityResponse(**response.json())
-                    logging.info(f"Received response: {response}")
-                    if response.avaliable:
-                        avaliable_servers.append(server)
-                serialized_servers = [
-                    server.__dict__ for server in avaliable_servers]
+                available_servers = self.find_available_servers(
+                    video_descriptor)
+                serialized_servers = [server.__dict__
+                                      for server in available_servers]
+                logging.info(serialized_servers)
 
                 return jsonify(serialized_servers)
 
             except Exception as e:
+                logging.info(e)
                 return jsonify({'error': str(e)}), 400
-
         self.app = app
+
+    def extract_video_info(self, data):
+        video_key = VideoKey(**data)
+        video_descriptor = self._movies.get(video_key)
+        return video_key, video_descriptor
+
+    def find_available_servers(self, video_descriptor):
+        serialized_data = json.dumps(video_descriptor.__dict__)
+        available_servers = []
+
+        for server in self._servers:
+            url = f"http://{server.address}:{server.port}/availability/"
+            headers = {'Content-Type': 'application/json'}
+            try:
+                response = self.check_server_availability(
+                    url, serialized_data, headers)
+                response = AvaliabilityResponse(**response.json())
+                logging.info(f"Received response: {response}")
+
+                if response.avaliable:
+                    available_servers.append(server)
+            except Exception as e:
+                logging.info(e)
+
+        return available_servers
+
+    def check_server_availability(self, url, data, headers):
+        return requests.post(url, data=data, headers=headers)
 
     def init_params(self) -> None:
         self._movies.update(
@@ -64,6 +85,21 @@ class Coordinator:
         self._servers.append(ServerInfo("127.0.0.1", 5003))
 
 
-if __name__ == "__main__":
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="Your script description here.")
+    parser.add_argument("--coordinator_host", default="127.0.0.1",
+                        help="The host address to connect the coordinator.")
+    parser.add_argument("--coordinator_port", type=int, default=12345,
+                        help="The port number to connect the coordinator.")
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_arguments()
+
+    coordinator_host = args.coordinator_host
+    coordinator_port = args.coordinator_port
     coordinator = Coordinator()
-    coordinator.app.run(debug=True)
+    coordinator.app.run(coordinator_host, coordinator_port, debug=True)

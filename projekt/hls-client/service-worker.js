@@ -1,4 +1,4 @@
-const serverUrls = ['http://localhost:5000', 'http://localhost:5001'];
+const serverUrls = ['http://localhost:5001', 'http://localhost:5002'];
 let currentServerIndex = 0;
 
 function getNextServerUrl() {
