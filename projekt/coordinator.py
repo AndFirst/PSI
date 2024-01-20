@@ -24,6 +24,18 @@ class Coordinator:
         app = Flask(__name__)
         CORS(app)
 
+        @app.route('/add_video/', methods=['POST'])
+        def add_video():
+            try:
+                data = request.get_json()
+                video_descriptor = VideoDescriptor(**data)
+                video_key = VideoKey(**data)
+                self._movies[video_key] = video_descriptor
+                return jsonify(data)
+            except Exception as e:
+                logging.info(e)
+                return jsonify({'error': str(e)}), 400
+
         @app.route('/servers/', methods=['POST'])
         def get_servers():
             try:

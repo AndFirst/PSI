@@ -5,7 +5,6 @@ import argparse
 import os
 import hashlib
 import argparse
-from re import T
 import logging
 from typing import Dict
 from flask import Flask, jsonify, request
@@ -56,6 +55,46 @@ class Server:
                 logging.warning(str(e))
                 return jsonify({'error': str(e)}), 400
 
+        @app.route('/add_movie/', methods=['POST'])
+        def add_movie():
+            try:
+                data = request.get_json()
+                video_path = data.get('video_path')
+                if not video_path:
+                    return jsonify({'error': 'Missing video_path parameter'}), 400
+
+                if not os.path.exists(video_path):
+                    return jsonify({'error': 'File not found'}), 404
+
+                video_length_ms = get_video_length(video_path)
+                video_hash = calculate_file_hash(video_path)
+
+                video_descriptor = VideoDescriptor(
+                    video_hash, video_length_ms)
+
+                # Update self._movies_location with new movie information
+                self._movies_location[video_descriptor] = video_path
+
+                logging.info(f'Movie added: {video_descriptor}')
+                logging.info(f'Files: {self._movies_location}')
+                return jsonify({'success': True, 'message': 'Movie added successfully'}), 200
+
+            except Exception as e:
+                logging.warning(str(e))
+                return jsonify({'error': str(e)}), 400
+
+        def calculate_file_hash(file_path):
+            sha256 = hashlib.sha256()
+            with open(file_path, 'rb') as file:
+                while chunk := file.read(8192):
+                    sha256.update(chunk)
+            return sha256.hexdigest()
+
+        def get_video_length(video_path):
+            # Add logic to get video length in milliseconds
+            # You may use a library like moviepy or ffprobe for this
+            return 1000
+
         @app.route('/<string:videoname>/<string:quality>/hls.m3u8')
         def hls_playlist(videoname, quality):
             file_dir = os.path.dirname(os.path.abspath(__file__))
@@ -71,8 +110,9 @@ class Server:
         self.app = app
 
     def init_params(self):
-        self._movies_location.update(
-            {VideoDescriptor("chuj", 123): "sample.mp4"})
+        pass
+        # self._movies_location.update(
+        #     {VideoDescriptor("chuj", 123): "sample.mp4"})
 
 
 def should_generate_hls(mp4_path, m3u8_path):
@@ -150,8 +190,8 @@ if __name__ == '__main__':
     videonames = args.videonames
     qualities = args.qualities
 
-    for videoname in videonames:
-        generate_hls(videoname, qualities)
+    # for videoname in videonames:
+    #     generate_hls(videoname, qualities)
 
     config = {}
     config['videonames'] = videonames
