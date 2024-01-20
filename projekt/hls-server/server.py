@@ -50,7 +50,7 @@ class Server:
                     response = AvaliabilityResponse(**response_data)
                     logging.info(f'Response: {jsonify(response)}')
                     return jsonify(response)
-
+                return jsonify(AvaliabilityResponse(avaliable=False, location=None))
             except Exception as e:
                 logging.warning(str(e))
                 return jsonify({'error': str(e)}), 400

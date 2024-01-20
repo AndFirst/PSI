@@ -90,11 +90,11 @@ class Coordinator:
 
     def init_params(self) -> None:
         self._movies.update(
-            {VideoKey("sample.mp4", 720): VideoDescriptor("chuj", 123)})
+            {VideoKey("video", 720): VideoDescriptor(hash='7a61d0db03466273ba38ea8663dcc25ae7298621135622a653bf2b9b39fee559', length=1000)})
 
         self._servers.append(ServerInfo("127.0.0.1", 5001))
         self._servers.append(ServerInfo("127.0.0.1", 5002))
-        self._servers.append(ServerInfo("127.0.0.1", 5003))
+        # self._servers.append(ServerInfo("127.0.0.1", 5003))
 
 
 def parse_arguments():
