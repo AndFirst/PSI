@@ -19,29 +19,46 @@ def should_generate_hls(mp4_path, m3u8_path):
     return mp4_mtime > m3u8_mtime
 
 
-@app.route('/<path:videoname>/hls.m3u8')
-def hls_playlist(videoname):
+def generate_hls(videoname, qualities):
     hls_directory = f'static/{videoname}'
     mp4_path = f'media/{videoname}.mp4'
-    m3u8_path = f'{hls_directory}/hls.m3u8'
 
-    os.makedirs(hls_directory, exist_ok=True)
+    for quality in qualities:
+        width = quality * 16.0 / 9.0
+        height = quality
+        quality_dir = f"{hls_directory}/{height}p"
+        quality_m3u8 = f"{quality_dir}/hls.m3u8"
 
-    if should_generate_hls(mp4_path, m3u8_path):
-        subprocess.run([
-            'ffmpeg', '-i', mp4_path,
-            '-c:v', 'libx264',
-            '-hls_time', '6',  # Decreased HLS segment duration to 6 seconds
-            '-hls_list_size', '0',
-            '-f', 'hls', m3u8_path
-        ])
+        os.makedirs(quality_dir, exist_ok=True)
 
-    return send_from_directory(f'static/{videoname}', 'hls.m3u8')
+        if should_generate_hls(mp4_path, quality_m3u8):
+            video_bitrate = max(int(quality / 480 * 2000), 500)
+            audio_bitrate = max(int(quality / 480 * 128), 64)
+
+            subprocess.run([
+                'ffmpeg', '-i', mp4_path,
+                '-vf', f"scale={width}:{height}",
+                '-c:a', 'aac',
+                '-b:a', f'{audio_bitrate}k',
+                '-c:v', 'h264',
+                '-b:v', f'{video_bitrate}k',
+                '-hls_time', '4',
+                '-hls_playlist_type', 'vod',
+                '-hls_list_size', '0',
+                '-hls_segment_filename', f"{quality_dir}/hls-%03d.ts",
+                '-f', 'hls', quality_m3u8
+            ])
 
 
-@app.route('/<path:videoname>/<path:filename>')
-def hls_stream(videoname, filename):
-    return send_from_directory(f'static/{videoname}', filename)
+@app.route('/<string:videoname>/<string:quality>/hls.m3u8')
+def hls_playlist(videoname, quality):
+    generate_hls(videoname, qualities=[144, 360, 720, 1080])
+    return send_from_directory(f'static/{videoname}/{quality}', 'hls.m3u8')
+
+
+@app.route('/<string:videoname>/<string:quality>/<path:filename>')
+def hls_stream(videoname, quality, filename):
+    return send_from_directory(f'static/{videoname}/{quality}', filename)
 
 
 if __name__ == '__main__':

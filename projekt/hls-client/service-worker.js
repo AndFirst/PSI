@@ -9,6 +9,7 @@ function getNextServerUrl() {
 
 self.addEventListener('fetch', event => {
     const request = event.request;
+    console.log(request);
   
     if (request.url.endsWith('.m3u8') || request.url.endsWith('.ts')) {
       const newUrl = modifyUrl(request.url);
@@ -20,6 +21,9 @@ self.addEventListener('fetch', event => {
         redirect: 'follow',
         referrer: 'no-referrer',
       });
+
+      
+      console.log(modifiedRequest);
   
       event.respondWith(fetch(modifiedRequest));
     } else {
