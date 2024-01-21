@@ -29,11 +29,11 @@ class Client:
         self.send_request(serialized_data)
 
     def send_request(self, data: str) -> None:
-        url = f"http://{self._coordinator_host}:{self._coordinator_port}/servers/"
+        url = f"http://{self._coordinator_host}:{self._coordinator_port}/servers/?name={video_name}&quality={video_quality}"
         headers = {'Content-Type': 'application/json'}
 
         try:
-            response = requests.post(url, data=data, headers=headers)
+            response = requests.get(url, headers=headers)
 
             if response.status_code == 200:
                 self.logger.info("Request successfully sent to /servers/")

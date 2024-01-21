@@ -16,7 +16,7 @@ class Coordinator:
             level=logging.INFO,
             format='%(asctime)s [COORDINATOR] %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S')
-        self._servers: List[ServerInfo] = []
+        self._servers: Dict[ServerInfo, int] = {}
         self._movies: Dict[VideoKey, VideoDescriptor] = {}
 
         self.init_params()
@@ -62,6 +62,21 @@ class Coordinator:
 
                 available_servers = self.find_available_servers(
                     video_descriptor)
+
+                min_load = min([self._servers[server]
+                               for server, location in available_servers])
+                logging.info(f'min_load: {min_load}')
+
+                available_servers = [
+                    (server, location) for server, location in available_servers if self._servers[server] == min_load]
+
+                for server, location in available_servers:
+                    logging.info(f'{server}-{self._servers[server]}')
+
+                # JEŚLI CHCEMY ZWRACAC JEDEN SERWER
+                available_servers = [available_servers[0]]
+                self._servers[available_servers[0][0]] += 1
+
                 serialized_servers = [CoordinatorResponse(server.address, server.port, location).__dict__
                                       for server, location in available_servers]
                 logging.info(jsonify(serialized_servers))
@@ -102,8 +117,8 @@ class Coordinator:
         return requests.post(url, data=data, headers=headers)
 
     def init_params(self) -> None:
-        self._servers.append(ServerInfo("127.0.0.1", 5001))
-        self._servers.append(ServerInfo("127.0.0.1", 5002))
+        self._servers[ServerInfo("127.0.0.1", 5001)] = 0
+        self._servers[ServerInfo("127.0.0.1", 5002)] = 0
 
 
 def parse_arguments():
