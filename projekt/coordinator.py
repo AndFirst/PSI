@@ -40,12 +40,20 @@ class Coordinator:
                 logging.info(e)
                 return jsonify({'error': str(e)}), 400
 
-        @app.route('/servers/', methods=['POST'])
-        @cross_origin()
+        @app.route('/servers/', methods=['GET'])
         def get_servers():
             try:
-                data = request.get_json()
-                logging.info(f'chuj {data}')
+                # Pobieranie parametrów z query string
+                name = request.args.get('name')
+                quality = request.args.get('quality')
+
+                # Sprawdzenie, czy oba parametry są dostępne
+                if not name or not quality:
+                    return jsonify({'error': 'Missing parameters: name and quality'}), 400
+
+                # Tutaj name i quality są dostępne jako zmienne w funkcji
+                data = {'name': name, 'quality': int(quality)}
+                logging.info(f'Dane: {data}')
 
                 video_key, video_descriptor = self.extract_video_info(data)
 
