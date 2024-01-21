@@ -20,8 +20,14 @@ if __name__ == '__main__':
 
     add_movie(server_urls[0], video_data)
 
+    video_data = {'video_path': 'media/video.mp4',
+                  'name': 'rick roll',
+                  'quality': 360}
+
+    add_movie(server_urls[1], video_data)
+
     video_data = {'video_path': 'media/video2.mp4',
                   'name': 'chlopaki nie placza',
-                  'quality': 480}
+                  'quality': 240}
 
     add_movie(server_urls[1], video_data)

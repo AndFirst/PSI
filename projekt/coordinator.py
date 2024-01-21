@@ -44,7 +44,7 @@ class Coordinator:
         def get_servers():
             try:
                 data = request.get_json()
-                logging.info(data)
+                logging.info(f'chuj {data}')
 
                 video_key, video_descriptor = self.extract_video_info(data)
 
@@ -53,9 +53,9 @@ class Coordinator:
 
                 available_servers = self.find_available_servers(
                     video_descriptor)
-                serialized_servers = [CoordinatorResponse(server.address, server.port, location)
+                serialized_servers = [CoordinatorResponse(server.address, server.port, location).__dict__
                                       for server, location in available_servers]
-                logging.info(serialized_servers)
+                logging.info(jsonify(serialized_servers))
 
                 return jsonify(serialized_servers)
 
@@ -95,7 +95,6 @@ class Coordinator:
     def init_params(self) -> None:
         self._servers.append(ServerInfo("127.0.0.1", 5001))
         self._servers.append(ServerInfo("127.0.0.1", 5002))
-        # self._servers.append(ServerInfo("127.0.0.1", 5003))
 
 
 def parse_arguments():
