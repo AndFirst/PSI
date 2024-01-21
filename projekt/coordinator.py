@@ -74,8 +74,9 @@ class Coordinator:
                     logging.info(f'{server}-{self._servers[server]}')
 
                 # JEŚLI CHCEMY ZWRACAC JEDEN SERWER
-                available_servers = [available_servers[0]]
-                self._servers[available_servers[0][0]] += 1
+                available_servers = available_servers[:2]
+                for server, location in available_servers:
+                    self._servers[server] += 1
 
                 serialized_servers = [CoordinatorResponse(server.address, server.port, location).__dict__
                                       for server, location in available_servers]
