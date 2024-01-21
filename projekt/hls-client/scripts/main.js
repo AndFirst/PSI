@@ -17,28 +17,26 @@ async function loadVideo() {
   const videoQuality = parseInt(videoQualitySelect.value);
   
   if (videoName) {
-    const requestData = {'name': videoName, 'quality': videoQuality}
-    const response = await fetch(coordinatorUrl, {
-      method: 'POST',
+    const url = `${coordinatorUrl}?name=${encodeURIComponent(videoName)}&quality=${videoQuality}`;
+    const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestData)
-    })
-    if (response.status == 404){
+      }
+    });
+
+    if (response.status === 404) {
       window.alert('404 file not found');
-    }
-    if (response.ok){
+    } else if (response.ok) {
       const serverList = await response.json();
       const serverData = serverList[0];
       const path = serverData.location;
       const videoUrl = `${path}/${videoQuality}/hls.m3u8`;
       loadSource(videoUrl);
+    } else {
+      window.alert(`Error processing request. Status:${response.status}`);
     }
-    window.alert(`Error processing request. Status:${response.status}`);
-    
   } else {
-      window.alert('Please enter a valid video name');
+    window.alert('Please enter a valid video name');
   }
 }
 
