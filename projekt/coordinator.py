@@ -6,7 +6,7 @@ import json
 from data_structures import AvaliabilityResponse, CoordinatorResponse, ServerInfo, VideoDescriptor, VideoKey
 import logging
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import requests
 
 
@@ -41,6 +41,7 @@ class Coordinator:
                 return jsonify({'error': str(e)}), 400
 
         @app.route('/servers/', methods=['POST'])
+        @cross_origin()
         def get_servers():
             try:
                 data = request.get_json()
