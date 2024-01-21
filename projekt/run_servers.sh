@@ -35,9 +35,9 @@ python coordinator.py --coordinator_host $coordinator_host --coordinator_port $c
 # Wait for a short time to ensure the coordinator is running before launching servers
 sleep 2
 # Launch three server instances with different host and port combinations
-cd hls-server &
+cd hls-server 
 for i in "${!server_ports[@]}"; do
-    python hls-server/server.py --coordinator_host $coordinator_host --coordinator_port $coordinator_port --server_host "127.0.0.1" --server_port ${server_ports[i]} --server_id ${server_ids[i]} &
+    python server.py --coordinator_host $coordinator_host --coordinator_port $coordinator_port --server_host "127.0.0.1" --server_port ${server_ports[i]} --server_id ${server_ids[i]} &
 done
 # Wait for all background processes to finish
 wait

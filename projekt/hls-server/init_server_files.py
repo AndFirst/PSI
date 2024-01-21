@@ -14,13 +14,13 @@ def add_movie(server_url, video_data):
 if __name__ == '__main__':
     server_urls = 'http://127.0.0.1:5001', 'http://127.0.0.1:5002'
 
-    video_data = {'video_path': 'hls-server/media/video.mp4',
+    video_data = {'video_path': 'media/video.mp4',
                   'name': 'rick roll',
-                  'quality': 720}
+                  'quality': 360}
 
     add_movie(server_urls[0], video_data)
 
-    video_data = {'video_path': 'hls-server/media/video2.mp4',
+    video_data = {'video_path': 'media/video2.mp4',
                   'name': 'chlopaki nie placza',
                   'quality': 480}
 

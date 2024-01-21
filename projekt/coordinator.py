@@ -3,7 +3,7 @@ from typing import Dict, List
 import socket
 import argparse
 import json
-from data_structures import AvaliabilityResponse, ServerInfo, VideoDescriptor, VideoKey
+from data_structures import AvaliabilityResponse, CoordinatorResponse, ServerInfo, VideoDescriptor, VideoKey
 import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -28,7 +28,6 @@ class Coordinator:
         def add_video():
             try:
                 data = request.get_json()
-                logging.info(f'chuj {data}')
                 video_key = data['video_key']
                 video_descriptor = data['video_descriptor']
 
@@ -54,8 +53,8 @@ class Coordinator:
 
                 available_servers = self.find_available_servers(
                     video_descriptor)
-                serialized_servers = [server.__dict__
-                                      for server in available_servers]
+                serialized_servers = [CoordinatorResponse(server.address, server.port, location)
+                                      for server, location in available_servers]
                 logging.info(serialized_servers)
 
                 return jsonify(serialized_servers)
@@ -84,7 +83,7 @@ class Coordinator:
                 logging.info(f"Received response: {response}")
 
                 if response.avaliable:
-                    available_servers.append(server)
+                    available_servers.append((server, response.location))
             except Exception as e:
                 logging.info(e)
 

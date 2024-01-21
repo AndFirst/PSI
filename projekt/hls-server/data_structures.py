@@ -24,3 +24,8 @@ class VideoDescriptor:
 class AvaliabilityResponse:
     avaliable: bool
     location: Optional[str]
+
+
+@dataclass(frozen=True)
+class CoordinatorResponse(ServerInfo):
+    location: str
