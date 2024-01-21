@@ -53,7 +53,7 @@ def parse_arguments():
                         help="The host address to connect the coordinator.")
     parser.add_argument("--coordinator_port", type=int, default=5000,
                         help="The port number to connect the coordinator.")
-    parser.add_argument('--video_name', type=str, default='sample.mp4',
+    parser.add_argument('--video_name', type=str, default='video',
                         help="The name of video you want to see.")
     parser.add_argument('--video_quality', type=int, default=720,
                         help="The quality of video you want to see.")
