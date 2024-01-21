@@ -13,9 +13,17 @@ self.addEventListener('fetch', event => {
     console.log(request);
 
     if (request.url.includes('/servers/')) {
-      const modifiedHeaders = new Headers(request.headers);
-      modifiedHeaders.set('Content-Type', 'application/json');  
-      event.respondWith(fetch(request, { headers: modifiedHeaders }).then(async response => {
+      const modifiedRequest = new Request(request.url, {
+        method: request.method,
+        headers: request.headers,
+        mode: 'cors',
+        credentials: 'same-origin',
+        redirect: 'follow',
+        referrer: 'no-referrer',
+        body: request.body
+      });
+
+      event.respondWith(fetch(modifiedRequest).then(async response => {
         console.log(response);
         if (response.ok) {
           const serverList = await response.json();

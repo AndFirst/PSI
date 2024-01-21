@@ -21,7 +21,7 @@ async function loadVideo() {
     const response = await fetch(coordinatorUrl, {
       method: 'POST',
       headers: {
-        ContentType: 'application/json'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestData)
     })
