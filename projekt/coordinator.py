@@ -28,10 +28,15 @@ class Coordinator:
         def add_video():
             try:
                 data = request.get_json()
-                video_descriptor = VideoDescriptor(**data)
-                video_key = VideoKey(**data)
+                logging.info(f'chuj {data}')
+                video_key = data['video_key']
+                video_descriptor = data['video_descriptor']
+
+                video_descriptor = VideoDescriptor(**video_descriptor)
+                video_key = VideoKey(**video_key)
                 self._movies[video_key] = video_descriptor
-                return jsonify(data)
+                print(self._movies)
+                return jsonify({'success': True, 'message': 'Movie added successfully'}), 200
             except Exception as e:
                 logging.info(e)
                 return jsonify({'error': str(e)}), 400
@@ -89,9 +94,6 @@ class Coordinator:
         return requests.post(url, data=data, headers=headers)
 
     def init_params(self) -> None:
-        self._movies.update(
-            {VideoKey("video", 720): VideoDescriptor(hash='7a61d0db03466273ba38ea8663dcc25ae7298621135622a653bf2b9b39fee559', length=1000)})
-
         self._servers.append(ServerInfo("127.0.0.1", 5001))
         self._servers.append(ServerInfo("127.0.0.1", 5002))
         # self._servers.append(ServerInfo("127.0.0.1", 5003))

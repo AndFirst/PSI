@@ -1,3 +1,5 @@
+from email import header
+import json
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 import subprocess
@@ -9,9 +11,9 @@ import logging
 from typing import Dict
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from data_structures import VideoDescriptor, AvaliabilityResponse
+from data_structures import VideoDescriptor, AvaliabilityResponse, VideoKey
 import os
-
+from requests import post
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [SERVER] %(message)s',
@@ -59,7 +61,9 @@ class Server:
         def add_movie():
             try:
                 data = request.get_json()
-                video_path = data.get('video_path')
+                video_path = data.pop('video_path')
+
+                video_key = VideoKey(**data)
                 if not video_path:
                     return jsonify({'error': 'Missing video_path parameter'}), 400
 
@@ -74,9 +78,16 @@ class Server:
 
                 # Update self._movies_location with new movie information
                 self._movies_location[video_descriptor] = video_path
-
                 logging.info(f'Movie added: {video_descriptor}')
-                logging.info(f'Files: {self._movies_location}')
+                try:
+                    url = f'http://{self._coordinator_host}:{self._coordinator_port}/add_video/'
+                    data_to_send = {'video_key': video_key.__dict__,
+                                    'video_descriptor': video_descriptor.__dict__}
+                    logging.info(f'dupa{data}')
+                    headers = {'Content-Type': 'application/json'}
+                    post(url, headers=headers, json=data_to_send)
+                except Exception as e:
+                    logging.warning(str(e))
                 return jsonify({'success': True, 'message': 'Movie added successfully'}), 200
 
             except Exception as e:
