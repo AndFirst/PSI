@@ -57,6 +57,9 @@ class Coordinator:
 
                 video_key, video_descriptor = self.extract_video_info(data)
 
+                if not video_key in self._movies.keys():
+                    return jsonify({'error': 'File not found.'}), 404
+
                 if video_descriptor is None:
                     return jsonify({'error': 'File not found.'}), 404
 
