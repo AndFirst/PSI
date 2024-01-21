@@ -26,13 +26,22 @@ def should_generate_hls(mp4_path, m3u8_path):
 
 
 def generate_hls(videoname, quality):
-    videoname = videoname.split('/')[-1]
     file_dir = os.path.dirname(os.path.abspath(__file__))
     hls_directory = f'{file_dir}/static/{videoname}'
-    mp4_path = f'media/{videoname}'
+    mp4_path = f'{file_dir}/media/{videoname}.mp4'
 
-    width = quality * 16.0 / 9.0
-    height = quality
+    quality_mapping = {
+        720: (1280, 720),
+        480: (640, 480),
+        360: (480, 360),
+        240: (426, 240),
+        144: (256, 144)
+    }
+
+    if quality not in quality_mapping:
+        raise ValueError("Invalid quality value")
+
+    width, height = quality_mapping[quality]
 
     quality_dir = f"{hls_directory}/{quality}p"
     quality_m3u8 = f"{quality_dir}/hls.m3u8"
