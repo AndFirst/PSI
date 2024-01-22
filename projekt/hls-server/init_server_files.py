@@ -31,3 +31,9 @@ if __name__ == '__main__':
                   'quality': 240}
 
     add_movie(server_urls[1], video_data)
+
+    video_data = {'video_path': 'media/video.mp4',
+                  'name': 'rick roll',
+                  'quality': 360}
+    
+    add_movie(server_urls[1], video_data)

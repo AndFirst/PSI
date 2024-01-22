@@ -3,6 +3,30 @@ import os
 import subprocess
 
 
+def calculate_directory_hash(directory_path):
+    sha256_hash = hashlib.sha256()
+
+    for root, dirs, files in os.walk(directory_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            with open(file_path, "rb") as f:
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+
+    return sha256_hash.hexdigest()
+
+
+def calculate_directory_size(directory_path):
+    total_size = 0
+
+    for root, dirs, files in os.walk(directory_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            total_size += os.path.getsize(file_path)
+
+    return total_size
+
+
 def calculate_file_hash(file_path):
     sha256 = hashlib.sha256()
     with open(file_path, 'rb') as file:
@@ -57,4 +81,4 @@ def generate_hls(videoname, quality):
             '-f', 'hls', quality_m3u8
         ])
 
-    return f"/static/{videoname}/{quality}p/hls.m3u8"
+    return f"static/{videoname}/{quality}p/hls.m3u8"

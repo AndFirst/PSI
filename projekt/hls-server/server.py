@@ -11,7 +11,7 @@ from flask_cors import CORS
 from data_structures import VideoDescriptor, AvaliabilityResponse, VideoKey
 import os
 from requests import post
-from utils import generate_hls, get_video_length, calculate_file_hash
+from utils import generate_hls, calculate_directory_hash, calculate_directory_size
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [SERVER] %(message)s',
@@ -66,13 +66,14 @@ class Server:
                 if not os.path.exists(video_path):
                     return jsonify({'error': 'File not found'}), 404
 
-                video_length_ms = get_video_length(video_path)
-                video_hash = calculate_file_hash(video_path)
+                hls_path = generate_hls(video_path, video_key.quality)
+
+                hls_dir = os.path.dirname(hls_path)
+                video_length = calculate_directory_size(hls_dir)
+                video_hash = calculate_directory_hash(hls_dir)
 
                 video_descriptor = VideoDescriptor(
-                    video_hash, video_length_ms)
-
-                hls_path = generate_hls(video_path, video_key.quality)
+                    video_hash, video_length)
 
                 self._movies_location[video_descriptor] = hls_path
 

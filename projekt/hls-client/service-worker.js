@@ -21,14 +21,13 @@ async function handleServersRequest(request) {
     redirect: 'follow',
     referrer: 'no-referrer'
   });
+  console.log("Service worker modified:", modifiedRequest);
 
   return fetch(modifiedRequest).then(async response => {
 
     if (response.ok) {
       const clonedResponse = response.clone();
-
       const serverList = await clonedResponse.json();
-
       serverUrls = serverList.map(server => `http://${server.address}:${server.port}`);
     }
 
@@ -45,8 +44,7 @@ function rerouteUrl(originalUrl) {
 self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const request = event.request;
-    console.log(`Service worker recived:`);
-    console.log(request)
+    console.log("Service worker recived:", request);
 
     if (request.url.startsWith(coordinatorUrl) && request.method === 'GET') {
       // Pobranie parametrów z query string
@@ -69,6 +67,7 @@ self.addEventListener('fetch', event => {
         redirect: 'follow',
         referrer: 'no-referrer',
       });
+      console.log("Service worker modified:", modifiedRequest);
 
       return fetch(modifiedRequest);
     } else {
