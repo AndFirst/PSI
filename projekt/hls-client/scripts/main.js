@@ -2,6 +2,7 @@ const videoPlayer = document.getElementById('video-player');
 const videoNameInput = document.getElementById('video-name');
 const videoQualitySelect = document.getElementById('video-resolution');
 const coordinatorUrl = 'http://127.0.0.1:5000/servers/';
+
 function loadSource(videoUrl) {
   if (Hls.isSupported()) {
     const hls = new Hls();
@@ -39,10 +40,3 @@ async function loadVideo() {
     window.alert('Please enter a valid video name');
   }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-  const defaultVideoName = 'video';
-  const defaultVideoQuality = '720p';
-  const defaultVideoUrl = `${defaultVideoName}/${defaultVideoQuality}/hls.m3u8`;
-  loadSource(defaultVideoUrl);
-});

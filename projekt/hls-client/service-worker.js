@@ -1,53 +1,54 @@
 let serverUrls = [];
 let currentServerIndex = 0;
+const coordinatorUrl = 'http://127.0.0.1:5000/servers/';
 
 function getNextServerUrl() {
-  const serverUrl = serverUrls[currentServerIndex];
-  currentServerIndex = (currentServerIndex + 1) % serverUrls.length;
-  return serverUrl;
+  if (serverUrls.length !== 0) {
+    const serverUrl = serverUrls[currentServerIndex];
+    currentServerIndex = (currentServerIndex + 1) % serverUrls.length;
+    return serverUrl;
+  }
 }
 
-async function modifyRequestBody(request) {
-  const bodyText = await request.text();
-  return new Request(request.url, {
+async function handleServersRequest(request) {
+  const modifiedRequest = new Request(request.url, {
     method: request.method,
     headers: {
       'Content-Type': 'application/json',
-      // inne nagłówki...
     },
     mode: 'cors',
     credentials: 'same-origin',
     redirect: 'follow',
-    referrer: 'no-referrer',
-    body: bodyText
+    referrer: 'no-referrer'
   });
-}
-
-async function handleServersRequest(request) {
-  const modifiedRequest = await modifyRequestBody(request);
 
   return fetch(modifiedRequest).then(async response => {
-    console.log(response);
+
     if (response.ok) {
-      const serverList = await response.json();
-      console.log(serverList);
-      serverUrls = serverList.map(server => `http://${server.host}:${server.port}`);
-      console.log(serverUrls);
+      const clonedResponse = response.clone();
+
+      const serverList = await clonedResponse.json();
+
+      serverUrls = serverList.map(server => `http://${server.address}:${server.port}`);
     }
+
     return response;
   });
 }
 
-function modifyUrl(originalUrl) {
+function rerouteUrl(originalUrl) {
   const serverUrl = getNextServerUrl();
+  console.log(serverUrls, currentServerIndex, serverUrl);
   return originalUrl.replace(/^(https?:\/\/[^\/]+)(\/.*)?$/, serverUrl + '$2');
 }
 
 self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const request = event.request;
+    console.log(`Service worker recived:`);
+    console.log(request)
 
-    if (request.url.includes(coordinatorUrl) && request.method === 'GET') {
+    if (request.url.startsWith(coordinatorUrl) && request.method === 'GET') {
       // Pobranie parametrów z query string
       const url = new URL(request.url);
       const name = url.searchParams.get('name');
@@ -57,23 +58,9 @@ self.addEventListener('fetch', event => {
         return new Response('Invalid parameters', { status: 400, statusText: 'Bad Request' });
       }
 
-      const data = { 'name': name, 'quality': parseInt(quality) };
-      const modifiedRequest = new Request(request.url, {
-        method: request.method,
-        headers: {
-          'Content-Type': 'application/json',
-          // inne nagłówki...
-        },
-        mode: 'cors',
-        credentials: 'same-origin',
-        redirect: 'follow',
-        referrer: 'no-referrer',
-        body: JSON.stringify(data)
-      });
-
-      return handleServersRequest(modifiedRequest);
+      return handleServersRequest(request);
     } else if (request.url.endsWith('.m3u8') || request.url.endsWith('.ts')) {
-      const newUrl = modifyUrl(request.url);
+      const newUrl = rerouteUrl(request.url);
       const modifiedRequest = new Request(newUrl, {
         method: request.method,
         headers: request.headers,
@@ -82,8 +69,6 @@ self.addEventListener('fetch', event => {
         redirect: 'follow',
         referrer: 'no-referrer',
       });
-
-      console.log(modifiedRequest);
 
       return fetch(modifiedRequest);
     } else {
