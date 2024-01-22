@@ -29,6 +29,7 @@ async function handleServersRequest(request) {
       const clonedResponse = response.clone();
       const serverList = await clonedResponse.json();
       serverUrls = serverList.map(server => `http://${server.address}:${server.port}`);
+      currentServerIndex = 0;
     }
 
     return response;
