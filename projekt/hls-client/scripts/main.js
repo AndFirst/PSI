@@ -31,7 +31,7 @@ async function loadVideo() {
       const serverList = await response.json();
       const serverData = serverList[0];
       const path = serverData.location;
-      const videoUrl = `${path}/${videoQuality}/hls.m3u8`;
+      const videoUrl = `${path}`;
       loadSource(videoUrl);
     } else {
       window.alert(`Error processing request. Status:${response.status}`);

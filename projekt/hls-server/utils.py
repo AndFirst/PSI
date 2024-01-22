@@ -56,3 +56,5 @@ def generate_hls(videoname, quality):
             '-hls_segment_filename', f"{quality_dir}/hls-%03d.ts",
             '-f', 'hls', quality_m3u8
         ])
+
+    return f"/static/{videoname}/{quality}p/hls.m3u8"

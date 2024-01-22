@@ -72,9 +72,9 @@ class Server:
                 video_descriptor = VideoDescriptor(
                     video_hash, video_length_ms)
 
-                self._movies_location[video_descriptor] = video_path
+                hls_path = generate_hls(video_path, video_key.quality)
 
-                generate_hls(video_path, video_key.quality)
+                self._movies_location[video_descriptor] = hls_path
 
                 logging.info(f'Movie added: {video_descriptor}')
                 try:
